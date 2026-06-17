@@ -49,6 +49,7 @@ function buildBook() {
 }
 
 function renderDots() {
+  if (!dots) return;
   dots.innerHTML = "";
 
   for (let index = 0; index <= sheetCount; index += 1) {
@@ -84,15 +85,15 @@ function updateBook() {
     sheet.style.zIndex = flipped ? index + 1 : sheetCount - index + 10;
   });
 
-  Array.from(dots.children).forEach((dot, index) => {
+  Array.from(dots ? dots.children : []).forEach((dot, index) => {
     dot.classList.toggle("is-active", index === currentSheet);
   });
 
   book.classList.toggle("is-cover", currentSheet === 0);
 
-  counter.textContent = labelForState();
-  prevButton.disabled = isAnimating || currentSheet === 0;
-  nextButton.disabled = isAnimating || currentSheet === sheetCount;
+  if (counter) counter.textContent = labelForState();
+  if (prevButton) prevButton.disabled = isAnimating || currentSheet === 0;
+  if (nextButton) nextButton.disabled = isAnimating || currentSheet === sheetCount;
 }
 
 function goToSheet(target) {
@@ -130,8 +131,8 @@ function handleSheetClick(event) {
   }
 }
 
-prevButton.addEventListener("click", previousPage);
-nextButton.addEventListener("click", nextPage);
+if (prevButton) prevButton.addEventListener("click", previousPage);
+if (nextButton) nextButton.addEventListener("click", nextPage);
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {

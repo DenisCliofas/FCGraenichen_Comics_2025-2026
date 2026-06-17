@@ -27,21 +27,16 @@ body {
   font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
 }
 
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  content: "";
-  background-image:
-    repeating-linear-gradient(100deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 24px),
-    linear-gradient(120deg, transparent 0 47%, rgba(255, 255, 255, 0.045) 48% 49%, transparent 50%);
-}
+
 
 .reader {
-  width: min(100%, 1220px);
-  margin: 0 auto;
-  padding: 22px clamp(14px, 3vw, 34px) 32px;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .topbar {
@@ -107,7 +102,8 @@ h1 {
 
 .stage {
   display: grid;
-  min-height: min(76vh, 900px);
+  width: 100%;
+  height: 100vh;
   place-items: center;
   perspective: 2300px;
   perspective-origin: 50% 42%;
@@ -129,23 +125,14 @@ h1 {
   background: rgba(0, 0, 0, 0.52);
   filter: blur(18px);
   transform: translateZ(-80px) rotateX(8deg);
+  transition: inset 720ms cubic-bezier(0.2, 0.72, 0.18, 1);
 }
 
-.book-shell::after {
-  position: absolute;
-  right: -13px;
-  bottom: -14px;
-  z-index: -1;
-  width: calc(100% - 8px);
-  height: 24px;
-  content: "";
-  background:
-    repeating-linear-gradient(0deg, #f2e8ca 0 2px, #b8a77c 2px 3px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.28), transparent 14%, rgba(0, 0, 0, 0.2));
-  border: 2px solid rgba(0, 0, 0, 0.36);
-  transform: rotateX(82deg);
-  transform-origin: top center;
+.book-shell:has(.book.is-cover)::before {
+  inset: 3.5% 27% -18px 27%;
 }
+
+
 
 .book {
   position: absolute;
@@ -177,11 +164,8 @@ h1 {
   pointer-events: none;
 }
 
-.book.is-cover .sheet[data-sheet="0"] {
+.book.is-cover .sheet {
   right: 25%;
-  transition:
-    transform 720ms cubic-bezier(0.2, 0.72, 0.18, 1),
-    right 720ms cubic-bezier(0.2, 0.72, 0.18, 1);
 }
 
 .sheet {
@@ -192,7 +176,9 @@ h1 {
   height: 100%;
   transform-origin: left center;
   transform-style: preserve-3d;
-  transition: transform 720ms cubic-bezier(0.2, 0.72, 0.18, 1);
+  transition:
+    transform 720ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    right 720ms cubic-bezier(0.2, 0.72, 0.18, 1);
   will-change: transform;
 }
 

@@ -57,6 +57,13 @@ pageFlip.loadFromImages([
   'content/Page19.png',
   'content/Page20.png',
   'content/Page21.png',
+  'content/Page22.png',
+  'content/Page23.png',
+  'content/Page24.png',
+  'content/Page25.png',
+  'content/Page26.png',
+  'content/Page27.png',
+  'content/Page28.png',
 ]);
 
 // Block hover corner preview: suppress mousemove when no button is held

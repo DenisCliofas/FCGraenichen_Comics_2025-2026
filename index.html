@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FC Gränichen D7A - Die Saison der Wölfe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="reader">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">FC Gränichen D7A</p>
+          <h1>Die Saison der Wölfe</h1>
+        </div>
+
+        <div class="controls" aria-label="Comic Navigation">
+          <button class="icon-button" type="button" data-prev aria-label="Zurück">‹</button>
+          <span class="page-counter" data-counter>Cover</span>
+          <button class="icon-button" type="button" data-next aria-label="Weiter">›</button>
+        </div>
+      </header>
+
+      <section class="stage" aria-label="Interaktiver Comic">
+        <div class="book-shell">
+          <div class="book" data-book aria-live="polite"></div>
+        </div>
+      </section>
+
+      <nav class="pager" aria-label="Seitenauswahl" data-dots></nav>
+      <p class="hint">Tippe die Seitenränder, nutze die Buttons oder die Pfeiltasten.</p>
+
+      <template data-page-template="0">
+        <article class="page-art cover-page">
+          <img src="content/Cover.png" alt="Cover: FC Gränichen D7A - Die Saison der Wölfe" />
+        </article>
+      </template>
+
+      <template data-page-template="1">
+        <article class="page-art image-page">
+          <img src="content/Page1.png" alt="Comicseite 1: Kapitel 1 - Das neue Rudel" />
+        </article>
+      </template>
+
+      <template data-page-template="2">
+        <article class="page-art image-page">
+          <img src="content/Page2.png" alt="Comicseite 2" />
+        </article>
+      </template>
+
+      <template data-page-template="3">
+        <article class="page-art image-page">
+          <img src="content/Page3.png" alt="Comicseite 3" />
+        </article>
+      </template>
+
+      <template data-page-template="4">
+        <article class="page-art image-page">
+          <img src="content/Page4.png" alt="Comicseite 4" />
+        </article>
+      </template>
+
+      <template data-page-template="5">
+        <article class="page-art image-page">
+          <img src="content/Page5.png" alt="Comicseite 5" />
+        </article>
+      </template>
+
+      <template data-page-template="6">
+        <article class="page-art placeholder-page">
+          <div class="placeholder-content">
+            <span>Seite 7</span>
+            <h2>Seite 7</h2>
+            <p>Comicbild folgt.</p>
+          </div>
+        </article>
+      </template>
+
+      <template data-page-template="7">
+        <article class="page-art image-page">
+          <img src="content/Page7.png" alt="Comicseite 7" />
+        </article>
+      </template>
+
+      <template data-page-template="8">
+        <article class="page-art image-page">
+          <img src="content/Page8.png" alt="Comicseite 8" />
+        </article>
+      </template>
+
+      <template data-page-template="9">
+        <article class="page-art image-page">
+          <img src="content/Page9.png" alt="Comicseite 9" />
+        </article>
+      </template>
+
+      <template data-page-template="10">
+        <article class="page-art image-page">
+          <img src="content/Page10.png" alt="Comicseite 10" />
+        </article>
+      </template>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

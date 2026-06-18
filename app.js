@@ -78,3 +78,107 @@ function updateCoverClass() {
 
 pageFlip.on('init', updateCoverClass);
 pageFlip.on('flip', updateCoverClass);
+
+// ── Mobile pinch-to-zoom & double-tap (touch devices only) ─────────────────
+if ('ontouchstart' in window) {
+  const bookEl = document.getElementById('book');
+
+  let scale = 1, panX = 0, panY = 0;
+  let pinchDist0 = 0, scale0 = 1;
+  let panX0 = 0, panY0 = 0;
+  let lastTap = 0;
+  let active = false;
+
+  function isPortrait() { return window.innerHeight > window.innerWidth; }
+
+  function coverOffsetX() {
+    if (isPortrait()) return 0;
+    return bookEl.classList.contains('is-cover') ? -window.innerWidth * 0.25 : 0;
+  }
+
+  function commitZoom(animated) {
+    bookEl.style.transition = animated ? 'transform 0.3s ease' : 'none';
+    if (scale > 1.01) {
+      bookEl.style.transform =
+        `translate(${coverOffsetX() + panX}px, ${panY}px) scale(${scale})`;
+    } else {
+      bookEl.style.transform = '';
+    }
+  }
+
+  function clampPan() {
+    const mx = ((scale - 1) * window.innerWidth) / 2;
+    const my = ((scale - 1) * window.innerHeight) / 2;
+    panX = Math.max(-mx, Math.min(mx, panX));
+    panY = Math.max(-my, Math.min(my, panY));
+  }
+
+  function onStart(e) {
+    if (e.touches.length === 2) {
+      active = true;
+      pinchDist0 = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      scale0 = scale;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    } else if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTap < 280) {
+        scale = scale > 1.01 ? 1 : 2.5;
+        if (scale === 1) { panX = 0; panY = 0; }
+        commitZoom(true);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        lastTap = 0;
+        return;
+      }
+      lastTap = now;
+      if (scale > 1.01) {
+        active = true;
+        panX0 = e.touches[0].clientX - panX;
+        panY0 = e.touches[0].clientY - panY;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }
+  }
+
+  function onMove(e) {
+    if (!active) return;
+    if (e.touches.length === 2) {
+      const d = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      scale = Math.max(1, Math.min(5, scale0 * (d / pinchDist0)));
+      clampPan();
+      commitZoom(false);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    } else if (e.touches.length === 1 && scale > 1.01) {
+      panX = e.touches[0].clientX - panX0;
+      panY = e.touches[0].clientY - panY0;
+      clampPan();
+      commitZoom(false);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  }
+
+  function onEnd(e) {
+    if (e.touches.length === 1 && active) {
+      panX0 = e.touches[0].clientX - panX;
+      panY0 = e.touches[0].clientY - panY;
+    }
+    if (e.touches.length === 0) {
+      active = false;
+      if (scale < 1.05) { scale = 1; panX = 0; panY = 0; commitZoom(true); }
+    }
+  }
+
+  document.addEventListener('touchstart', onStart, { passive: false, capture: true });
+  document.addEventListener('touchmove',  onMove,  { passive: false, capture: true });
+  document.addEventListener('touchend',   onEnd,   { passive: true,  capture: true });
+}

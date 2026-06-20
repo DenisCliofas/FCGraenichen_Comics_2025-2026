@@ -67,14 +67,11 @@ pageFlip.loadFromImages([
   'content/Page17.png',
   'content/Page18.png',
   'content/Page19.png',
-  'content/Page20.png',
-  'content/Page21.png',
   'content/Page22.png',
   'content/Page23.png',
   'content/Page24.png',
   'content/Page25.png',
   'content/Page26.png',
-  'content/Page27.png',
   'content/Page28.png',
   'content/BackCover.png',
 ]);
@@ -126,10 +123,9 @@ if (window.visualViewport) {
     'content/Page9.png','content/Page10.png','content/Page11.png',
     'content/Page12.png','content/Page13.png','content/Page14.png',
     'content/Page15.png','content/Page16.png','content/Page17.png',
-    'content/Page18.png','content/Page19.png','content/Page20.png',
-    'content/Page21.png','content/Page22.png','content/Page23.png',
-    'content/Page24.png','content/Page25.png','content/Page26.png',
-    'content/Page27.png','content/Page28.png',
+    'content/Page18.png','content/Page19.png','content/Page22.png',
+    'content/Page23.png','content/Page24.png','content/Page25.png',
+    'content/Page26.png','content/Page28.png',
     'content/BackCover.png',
   ];
 

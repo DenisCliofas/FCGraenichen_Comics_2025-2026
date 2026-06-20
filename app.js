@@ -203,8 +203,9 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
     }
     if (e.touches.length === 0) {
       touchActive = false;
-      bookEl.style.pointerEvents = '';  // restore StPageFlip touch handling
       if (scale < 1.05) resetZoom(true);
+      // Delay restoring pointer events so StPageFlip doesn't catch the finger-lift as a flip
+      setTimeout(() => { bookEl.style.pointerEvents = ''; }, 350);
     }
   }
 

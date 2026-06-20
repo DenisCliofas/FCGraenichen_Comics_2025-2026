@@ -30,6 +30,13 @@ body {
   transform: translateX(-25%);
 }
 
+/* Portrait mobile: StPageFlip centres single page — no offset needed */
+@media (pointer: coarse) and (orientation: portrait) {
+  #book.is-cover {
+    transform: none;
+  }
+}
+
 #zoom-overlay {
   display: none;
   position: fixed;

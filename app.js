@@ -148,39 +148,51 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
   }
 
   // ── Touch ──
+  let touchStartX = 0, touchStartY = 0, touchStartTime = 0, wasPinch = false;
+
   function onTouchStart(e) {
+    // Always intercept — we handle all touch ourselves on mobile
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
     if (e.touches.length === 2) {
       touchActive = true;
-      // Block StPageFlip from receiving any more touch events during pinch
+      wasPinch = true;
       bookEl.style.pointerEvents = 'none';
       pinchDist0 = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
       scale0 = scale;
-      e.preventDefault(); e.stopImmediatePropagation();
     } else if (e.touches.length === 1) {
+      wasPinch = false;
       const now = Date.now();
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = now;
+
+      // Double-tap zoom
       if (now - lastTap < 280) {
         scale = scale > 1.01 ? 1 : 2.5;
         if (scale === 1) { panX = 0; panY = 0; }
         commitZoom(true);
-        e.preventDefault(); e.stopImmediatePropagation();
-        lastTap = 0; return;
+        lastTap = 0;
+        return;
       }
       lastTap = now;
+
       if (scale > 1.01) {
         touchActive = true;
         panX0 = e.touches[0].clientX - panX;
         panY0 = e.touches[0].clientY - panY;
-        e.preventDefault(); e.stopImmediatePropagation();
       }
     }
   }
 
   function onTouchMove(e) {
-    if (!touchActive) return;
     if (e.touches.length === 2) {
+      touchActive = true;
+      wasPinch = true;
       const d = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
@@ -188,7 +200,7 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
       scale = Math.max(1, Math.min(5, scale0 * (d / pinchDist0)));
       clampPan(); commitZoom(false);
       e.preventDefault(); e.stopImmediatePropagation();
-    } else if (e.touches.length === 1 && scale > 1.01) {
+    } else if (e.touches.length === 1 && scale > 1.01 && touchActive) {
       panX = e.touches[0].clientX - panX0;
       panY = e.touches[0].clientY - panY0;
       clampPan(); commitZoom(false);
@@ -202,10 +214,30 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
       panY0 = e.touches[0].clientY - panY;
     }
     if (e.touches.length === 0) {
+      const wasPinching = wasPinch;
       touchActive = false;
+      wasPinch = false;
       if (scale < 1.05) resetZoom(true);
-      // Delay restoring pointer events so StPageFlip doesn't catch the finger-lift as a flip
-      setTimeout(() => { bookEl.style.pointerEvents = ''; }, 350);
+      // Delay restoring pointer events so StPageFlip doesn't catch the lift as a flip
+      setTimeout(() => { bookEl.style.pointerEvents = ''; }, 400);
+
+      // Single-finger tap or swipe → flip page (only when not zoomed and not a pinch)
+      if (!wasPinching && scale <= 1.01 && e.changedTouches.length === 1) {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        const elapsed = Date.now() - touchStartTime;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 25 && elapsed < 400) {
+          // Tap: flip based on which side
+          if (touchStartX > window.innerWidth / 2) pageFlip.flipNext('bottom');
+          else pageFlip.flipPrev('top');
+        } else if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5 && elapsed < 600) {
+          // Horizontal swipe
+          if (dx < 0) pageFlip.flipNext('bottom');
+          else pageFlip.flipPrev('top');
+        }
+      }
     }
   }
 

@@ -32,6 +32,9 @@ const pageFlip = new St.PageFlip(document.getElementById('book'), {
   maxShadowOpacity: 0.6,
   showCover: true,
   mobileScrollSupport: false,
+  useMouseEvents: false,
+  showPageCorners: false,
+  disableFlipByClick: true,
 });
 
 pageFlip.loadFromImages([
@@ -151,14 +154,11 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
   let touchStartX = 0, touchStartY = 0, touchStartTime = 0, wasPinch = false;
 
   function onTouchStart(e) {
-    // Always intercept — we handle all touch ourselves on mobile
     e.preventDefault();
-    e.stopImmediatePropagation();
 
     if (e.touches.length === 2) {
       touchActive = true;
       wasPinch = true;
-      bookEl.style.pointerEvents = 'none';
       pinchDist0 = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
@@ -199,12 +199,12 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
       );
       scale = Math.max(1, Math.min(5, scale0 * (d / pinchDist0)));
       clampPan(); commitZoom(false);
-      e.preventDefault(); e.stopImmediatePropagation();
+      e.preventDefault();
     } else if (e.touches.length === 1 && scale > 1.01 && touchActive) {
       panX = e.touches[0].clientX - panX0;
       panY = e.touches[0].clientY - panY0;
       clampPan(); commitZoom(false);
-      e.preventDefault(); e.stopImmediatePropagation();
+      e.preventDefault();
     }
   }
 
@@ -218,8 +218,6 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
       touchActive = false;
       wasPinch = false;
       if (scale < 1.05) resetZoom(true);
-      // Delay restoring pointer events so StPageFlip doesn't catch the lift as a flip
-      setTimeout(() => { bookEl.style.pointerEvents = ''; }, 400);
 
       // Single-finger tap or swipe → flip page (only when not zoomed and not a pinch)
       if (!wasPinching && scale <= 1.01 && e.changedTouches.length === 1) {
@@ -280,12 +278,12 @@ window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
   }
 
   // Reset zoom on page flip
-  pageFlip.on('flip', () => { if (scale > 1) { bookEl.style.pointerEvents = ''; resetZoom(false); } });
+  pageFlip.on('flip', () => { if (scale > 1) resetZoom(false); });
 
   // Touch events
-  document.addEventListener('touchstart', onTouchStart, { passive: false, capture: true });
-  document.addEventListener('touchmove',  onTouchMove,  { passive: false, capture: true });
-  document.addEventListener('touchend',   onTouchEnd,   { passive: true,  capture: true });
+  document.addEventListener('touchstart', onTouchStart, { passive: false });
+  document.addEventListener('touchmove',  onTouchMove,  { passive: false });
+  document.addEventListener('touchend',   onTouchEnd,   { passive: true  });
 
   // Mouse events — wheel on book, drag/dblclick on overlay
   bookEl.addEventListener('wheel',     onWheel,    { passive: false });

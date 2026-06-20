@@ -44,11 +44,6 @@ body {
   z-index: 100;
 }
 
-@media (pointer: coarse) and (orientation: portrait) {
-  body {
-    align-items: flex-start;
-  }
-}
 
 #book .stf__item,
 #book .stf__wrapper {

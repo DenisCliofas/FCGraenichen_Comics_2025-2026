@@ -76,8 +76,19 @@ function updateCoverClass() {
   document.getElementById('book').classList.toggle('is-cover', isCover);
 }
 
-pageFlip.on('init', updateCoverClass);
+// On portrait mobile: shift the canvas up so the book top aligns with viewport top
+function applyPortraitAlign() {
+  if (!('ontouchstart' in window)) return;
+  if (window.innerHeight <= window.innerWidth) return; // landscape — skip
+  const r = pageFlip.getBoundsRect();
+  if (!r || r.top < 1) return;
+  const canvas = document.querySelector('#book canvas');
+  if (canvas) canvas.style.marginTop = `-${r.top}px`;
+}
+
+pageFlip.on('init', () => { updateCoverClass(); setTimeout(applyPortraitAlign, 50); });
 pageFlip.on('flip', updateCoverClass);
+window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
 
 // ── Zoom & pan (touch + desktop) ─────────────────────────────────────────────
 (function () {

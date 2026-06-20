@@ -31,9 +31,14 @@ body {
   transform: translateX(-25%);
 }
 
+#book.is-back-cover {
+  transform: translateX(25%);
+}
+
 /* Portrait mobile: StPageFlip centres single page — no offset needed */
 @media (pointer: coarse) and (orientation: portrait) {
-  #book.is-cover {
+  #book.is-cover,
+  #book.is-back-cover {
     transform: none;
   }
 }

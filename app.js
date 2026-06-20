@@ -76,6 +76,7 @@ pageFlip.loadFromImages([
   'content/Page26.png',
   'content/Page27.png',
   'content/Page28.png',
+  'content/BackCover.png',
 ]);
 
 // Block hover corner preview: suppress mousemove when no button is held
@@ -84,8 +85,10 @@ document.getElementById('book').addEventListener('mousemove', (e) => {
 }, true);
 
 function updateCoverClass() {
-  const isCover = pageFlip.getCurrentPageIndex() === 0;
-  document.getElementById('book').classList.toggle('is-cover', isCover);
+  const idx = pageFlip.getCurrentPageIndex();
+  const last = pageFlip.getPageCount() - 1;
+  document.getElementById('book').classList.toggle('is-cover', idx === 0);
+  document.getElementById('book').classList.toggle('is-back-cover', idx === last);
 }
 
 // On portrait mobile: shift the canvas up so the book top aligns with viewport top
@@ -127,6 +130,7 @@ if (window.visualViewport) {
     'content/Page21.png','content/Page22.png','content/Page23.png',
     'content/Page24.png','content/Page25.png','content/Page26.png',
     'content/Page27.png','content/Page28.png',
+    'content/BackCover.png',
   ];
 
   let scale = 1, panX = 0, panY = 0;

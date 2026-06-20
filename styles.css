@@ -43,13 +43,13 @@ body {
   cursor: grab;
   z-index: 100;
 }
+
 @media (pointer: coarse) and (orientation: portrait) {
-  #book.is-cover {
-    transform: none;
+  body {
+    align-items: flex-start;
   }
 }
 
-#book canvas,
 #book .stf__item,
 #book .stf__wrapper {
   background: transparent !important;

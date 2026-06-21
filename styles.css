@@ -7,21 +7,16 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-}
-
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  overflow: hidden;
-  padding: 0;
   background: #111214;
 }
 
+body {
+  padding: 0;
+}
+
 #book {
-  width: 100%;
-  height: calc(var(--vh, 1vh) * 100);
+  position: fixed;
+  inset: 0;
   overflow: hidden;
   background: transparent;
   transition: transform 0.72s ease;

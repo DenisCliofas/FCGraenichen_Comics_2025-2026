@@ -6,22 +6,22 @@ html,
 body {
   margin: 0;
   height: 100%;
+  overflow: hidden;
 }
 
 body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   padding: 0;
   background: #111214;
 }
 
 #book {
-  width: 100vw;
-  height: 100vh;
-  height: 100svh; /* safe viewport height: never includes browser chrome */
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: transparent;
   transition: transform 0.72s ease;

@@ -20,8 +20,8 @@ body {
 
 #book {
   width: 100vw;
-  height: 100vh;    /* JS overrides this */
-  height: 100dvh;  /* modern browsers before JS settles */
+  height: 100vh;
+  height: 100svh; /* safe viewport height: never includes browser chrome */
   overflow: hidden;
   background: transparent;
   transition: transform 0.72s ease;

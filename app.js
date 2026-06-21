@@ -17,15 +17,6 @@
   };
 })();
 
-// Keep #book exactly equal to the visible viewport — fixes landscape bottom clipping
-// (100vh includes mobile browser chrome; window.innerHeight / visualViewport.height does not)
-const bookEl0 = document.getElementById('book');
-function fitBookHeight() {
-  const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  bookEl0.style.height = h + 'px';
-}
-fitBookHeight();
-
 const pageFlip = new St.PageFlip(document.getElementById('book'), {
   width: 420,
   height: 595,
@@ -100,15 +91,7 @@ function applyPortraitAlign() {
 
 pageFlip.on('init', () => { updateCoverClass(); setTimeout(applyPortraitAlign, 50); });
 pageFlip.on('flip', updateCoverClass);
-
-function onViewportResize() {
-  fitBookHeight();
-  setTimeout(() => { applyPortraitAlign(); pageFlip.update(); }, 150);
-}
-window.addEventListener('resize', onViewportResize);
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', onViewportResize);
-}
+window.addEventListener('resize', () => setTimeout(applyPortraitAlign, 150));
 
 // ── Zoom & pan (touch + desktop) ─────────────────────────────────────────────
 (function () {

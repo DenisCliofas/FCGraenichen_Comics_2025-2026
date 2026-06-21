@@ -20,8 +20,7 @@ body {
 }
 
 #book {
-  width: 100%;
-  height: calc(var(--vh, 1vh) * 100);
+  /* width/height set by JS to exact window.innerWidth/Height */
   overflow: hidden;
   background: transparent;
   transition: transform 0.72s ease;

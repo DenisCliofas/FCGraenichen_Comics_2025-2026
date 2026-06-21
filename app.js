@@ -17,6 +17,14 @@
   };
 })();
 
+// Size #book to exact visual viewport before StPageFlip measures the container
+const _bookEl = document.getElementById('book');
+function sizeBook() {
+  _bookEl.style.width  = window.innerWidth  + 'px';
+  _bookEl.style.height = window.innerHeight + 'px';
+}
+sizeBook();
+
 const pageFlip = new St.PageFlip(document.getElementById('book'), {
   width: 420,
   height: 595,
@@ -102,7 +110,13 @@ function applyPortraitAlign() {
 
 pageFlip.on('init', () => { updateCoverClass(); setTimeout(applyPortraitAlign, 50); });
 pageFlip.on('flip', updateCoverClass);
-window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign, 150); });
+
+function onResize() {
+  sizeBook();
+  setTimeout(() => { applyPortraitAlign(); pageFlip.update(); }, 200);
+}
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', () => setTimeout(onResize, 300));
 
 // ── Zoom & pan (touch + desktop) ─────────────────────────────────────────────
 (function () {

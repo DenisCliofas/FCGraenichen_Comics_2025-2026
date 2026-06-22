@@ -259,11 +259,14 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
     clampPan(); commitZoom(false);
   }
 
-  let clickStartX = 0, clickMoved = false;
+  let clickStartX = 0, clickStartY = 0, clickMoved = false, mouseIsDown = false;
 
   function onBookMouseDown(e) {
+    if (e.button !== 0) return; // left button only
     clickStartX = e.clientX;
+    clickStartY = e.clientY;
     clickMoved = false;
+    mouseIsDown = true;
     if (scale > 1.01) {
       mouseDown = true;
       panX0 = e.clientX - panX;
@@ -274,7 +277,9 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
   }
 
   function onMouseMove(e) {
-    if (Math.abs(e.clientX - clickStartX) > 5) clickMoved = true;
+    if (mouseIsDown && Math.hypot(e.clientX - clickStartX, e.clientY - clickStartY) > 8) {
+      clickMoved = true;
+    }
     if (!mouseDown) return;
     panX = e.clientX - panX0;
     panY = e.clientY - panY0;
@@ -283,11 +288,23 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
 
   function onMouseUp(e) {
     mouseDown = false;
+    mouseIsDown = false;
     overlay.style.cursor = scale > 1.01 ? 'grab' : 'default';
-    // Click-to-flip on desktop (only when not zoomed and not a drag)
-    if (!clickMoved && scale <= 1.01) {
+    if (scale > 1.01) return; // zoomed: pan only, no flip
+
+    const dx = e.clientX - clickStartX;
+    const dy = e.clientY - clickStartY;
+
+    if (clickMoved) {
+      // Horizontal swipe/drag → flip
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+        if (dx < 0) pageFlip.flipNext('bottom');
+        else pageFlip.flipPrev('bottom');
+      }
+    } else {
+      // Plain click → flip based on side
       if (e.clientX > window.innerWidth / 2) pageFlip.flipNext('bottom');
-      else pageFlip.flipPrev('top');
+      else pageFlip.flipPrev('bottom');
     }
   }
 

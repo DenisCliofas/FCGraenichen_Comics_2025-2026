@@ -259,7 +259,11 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
     clampPan(); commitZoom(false);
   }
 
-  function onMouseDown(e) {
+  let clickStartX = 0, clickMoved = false;
+
+  function onBookMouseDown(e) {
+    clickStartX = e.clientX;
+    clickMoved = false;
     if (scale > 1.01) {
       mouseDown = true;
       panX0 = e.clientX - panX;
@@ -270,15 +274,21 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
   }
 
   function onMouseMove(e) {
+    if (Math.abs(e.clientX - clickStartX) > 5) clickMoved = true;
     if (!mouseDown) return;
     panX = e.clientX - panX0;
     panY = e.clientY - panY0;
     clampPan(); commitZoom(false);
   }
 
-  function onMouseUp() {
+  function onMouseUp(e) {
     mouseDown = false;
     overlay.style.cursor = scale > 1.01 ? 'grab' : 'default';
+    // Click-to-flip on desktop (only when not zoomed and not a drag)
+    if (!clickMoved && scale <= 1.01) {
+      if (e.clientX > window.innerWidth / 2) pageFlip.flipNext('bottom');
+      else pageFlip.flipPrev('top');
+    }
   }
 
   function onDblClick(e) {
@@ -296,10 +306,11 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
   document.addEventListener('touchmove',  onTouchMove,  { passive: false });
   document.addEventListener('touchend',   onTouchEnd,   { passive: true  });
 
-  // Mouse events — wheel on book, drag/dblclick on overlay
-  bookEl.addEventListener('wheel',     onWheel,    { passive: false });
-  overlay.addEventListener('wheel',    onWheel,    { passive: false });
-  overlay.addEventListener('mousedown', onMouseDown);
+  // Mouse events — wheel on book, drag/click/dblclick on book+overlay
+  bookEl.addEventListener('wheel',      onWheel,        { passive: false });
+  overlay.addEventListener('wheel',     onWheel,        { passive: false });
+  bookEl.addEventListener('mousedown',  onBookMouseDown);
+  overlay.addEventListener('mousedown', onBookMouseDown);
   overlay.addEventListener('dblclick',  onDblClick);
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup',   onMouseUp);

@@ -17,6 +17,10 @@
   };
 })();
 
+// Desktop: let StPageFlip handle all mouse interactions (real-time drag, click).
+// Touch devices: disable StPageFlip mouse/touch events entirely — we handle them.
+const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 1;
+
 const pageFlip = new St.PageFlip(document.getElementById('book'), {
   width: 420,
   height: 595,
@@ -32,9 +36,9 @@ const pageFlip = new St.PageFlip(document.getElementById('book'), {
   maxShadowOpacity: 0.6,
   showCover: true,
   mobileScrollSupport: false,
-  useMouseEvents: false,
-  showPageCorners: false,
-  disableFlipByClick: true,
+  useMouseEvents: !isTouchDevice,
+  showPageCorners: !isTouchDevice,
+  disableFlipByClick: false,
 });
 
 pageFlip.loadFromImages([
@@ -250,7 +254,7 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
     }
   }
 
-  // ── Mouse (desktop) ──
+  // ── Mouse (desktop only — StPageFlip handles flip drag/click natively) ──
   function onWheel(e) {
     e.preventDefault();
     const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
@@ -259,14 +263,8 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
     clampPan(); commitZoom(false);
   }
 
-  let clickStartX = 0, clickStartY = 0, clickMoved = false, mouseIsDown = false;
-
-  function onBookMouseDown(e) {
-    if (e.button !== 0) return; // left button only
-    clickStartX = e.clientX;
-    clickStartY = e.clientY;
-    clickMoved = false;
-    mouseIsDown = true;
+  // Pan the zoom overlay when zoomed in on desktop
+  function onMouseDown(e) {
     if (scale > 1.01) {
       mouseDown = true;
       panX0 = e.clientX - panX;
@@ -277,35 +275,15 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
   }
 
   function onMouseMove(e) {
-    if (mouseIsDown && Math.hypot(e.clientX - clickStartX, e.clientY - clickStartY) > 8) {
-      clickMoved = true;
-    }
     if (!mouseDown) return;
     panX = e.clientX - panX0;
     panY = e.clientY - panY0;
     clampPan(); commitZoom(false);
   }
 
-  function onMouseUp(e) {
+  function onMouseUp() {
     mouseDown = false;
-    mouseIsDown = false;
     overlay.style.cursor = scale > 1.01 ? 'grab' : 'default';
-    if (scale > 1.01) return; // zoomed: pan only, no flip
-
-    const dx = e.clientX - clickStartX;
-    const dy = e.clientY - clickStartY;
-
-    if (clickMoved) {
-      // Horizontal swipe/drag → flip
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-        if (dx < 0) pageFlip.flipNext('bottom');
-        else pageFlip.flipPrev('bottom');
-      }
-    } else {
-      // Plain click → flip based on side
-      if (e.clientX > window.innerWidth / 2) pageFlip.flipNext('bottom');
-      else pageFlip.flipPrev('bottom');
-    }
   }
 
   function onDblClick(e) {
@@ -318,17 +296,21 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
   // Reset zoom on page flip
   pageFlip.on('flip', () => { if (scale > 1) resetZoom(false); });
 
-  // Touch events
-  document.addEventListener('touchstart', onTouchStart, { passive: false });
-  document.addEventListener('touchmove',  onTouchMove,  { passive: false });
-  document.addEventListener('touchend',   onTouchEnd,   { passive: true  });
+  // Touch events (mobile only — desktop uses StPageFlip native mouse handling)
+  if (isTouchDevice) {
+    document.addEventListener('touchstart', onTouchStart, { passive: false });
+    document.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    document.addEventListener('touchend',   onTouchEnd,   { passive: true  });
+  }
 
-  // Mouse events — wheel on book, drag/click/dblclick on book+overlay
-  bookEl.addEventListener('wheel',      onWheel,        { passive: false });
-  overlay.addEventListener('wheel',     onWheel,        { passive: false });
-  bookEl.addEventListener('mousedown',  onBookMouseDown);
-  overlay.addEventListener('mousedown', onBookMouseDown);
-  overlay.addEventListener('dblclick',  onDblClick);
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup',   onMouseUp);
+  // Mouse zoom (desktop) — StPageFlip owns flip drag/click; we own zoom
+  if (!isTouchDevice) {
+    bookEl.addEventListener('wheel',       onWheel,     { passive: false });
+    overlay.addEventListener('wheel',      onWheel,     { passive: false });
+    overlay.addEventListener('mousedown',  onMouseDown);
+    bookEl.addEventListener('dblclick',    onDblClick);
+    overlay.addEventListener('dblclick',   onDblClick);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup',   onMouseUp);
+  }
 })();

@@ -77,10 +77,17 @@ document.getElementById('book').addEventListener('mousemove', (e) => {
 }, true);
 
 function updateCoverClass() {
+  const book = document.getElementById('book');
+  // During a flip animation, the CSS transform on #book corrupts StPageFlip's
+  // getBoundingClientRect coordinate mapping. Remove it while flipping.
+  if (pageFlip.getState() !== 'read') {
+    book.classList.remove('is-cover', 'is-back-cover');
+    return;
+  }
   const idx = pageFlip.getCurrentPageIndex();
   const last = pageFlip.getPageCount() - 1;
-  document.getElementById('book').classList.toggle('is-cover', idx === 0);
-  document.getElementById('book').classList.toggle('is-back-cover', idx === last);
+  book.classList.toggle('is-cover', idx === 0);
+  book.classList.toggle('is-back-cover', idx === last);
 }
 
 // Keep #book sized to the true visual viewport (window.innerHeight excludes browser chrome on Android)
@@ -104,8 +111,9 @@ function applyPortraitAlign() {
   canvas.style.marginTop = `-${r.top}px`;
 }
 
-pageFlip.on('init', () => { updateCoverClass(); setTimeout(applyPortraitAlign, 50); });
-pageFlip.on('flip', updateCoverClass);
+pageFlip.on('init',        () => { updateCoverClass(); setTimeout(applyPortraitAlign, 50); });
+pageFlip.on('flip',        updateCoverClass);
+pageFlip.on('changeState', updateCoverClass); // remove transform during animation
 window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign, 150); });
 
 // ── Zoom & pan (touch + desktop) ─────────────────────────────────────────────

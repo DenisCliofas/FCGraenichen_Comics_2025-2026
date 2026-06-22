@@ -24,7 +24,8 @@ body {
   height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background: transparent;
-  transition: transform 0.72s ease;
+  /* No transition — CSS transform animation shifts getBoundingClientRect()
+     which corrupts StPageFlip's mouse coordinate mapping mid-animation */
 }
 
 #book.is-cover {

@@ -102,12 +102,6 @@ function onChangeState(e) {
   }
 }
 
-// Keep #book sized to the true visual viewport (window.innerHeight excludes browser chrome on Android)
-function setVH() {
-  document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
-}
-setVH();
-
 // On portrait mobile: shift canvas up so page top aligns with viewport top.
 // In landscape: clear any portrait margin-top so nothing is clipped at the top.
 function applyPortraitAlign() {
@@ -127,7 +121,6 @@ pageFlip.on('init',        () => { applyCoverClass(); setTimeout(applyPortraitAl
 pageFlip.on('flip',        applyCoverClass);
 pageFlip.on('changeState', onChangeState);
 window.addEventListener('resize', () => {
-  setVH();
   setTimeout(() => { pageFlip.update(); applyPortraitAlign(); applyCoverClass(); }, 50);
 });
 

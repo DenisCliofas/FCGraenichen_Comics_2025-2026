@@ -77,6 +77,14 @@ document.getElementById('book').addEventListener('mousemove', (e) => {
   if (e.buttons === 0) e.stopPropagation();
 }, true);
 
+// PDF button overlaps the canvas — stop mousemove/mousedown from reaching StPageFlip
+const _pdfBtn = document.getElementById('pdf-btn');
+if (_pdfBtn) {
+  _pdfBtn.addEventListener('mousemove',  (e) => e.stopPropagation());
+  _pdfBtn.addEventListener('mouseenter', (e) => e.stopPropagation());
+  _pdfBtn.addEventListener('mousedown',  (e) => e.stopPropagation());
+}
+
 const _book = document.getElementById('book');
 
 function applyCoverClass() {

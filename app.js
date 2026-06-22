@@ -92,11 +92,12 @@ function removeCoverClass() {
 
 // changeState event fires BEFORE this.state is assigned in StPageFlip,
 // so getState() returns the OLD state. Use e.data (the new state) instead.
+// Only remove cover class during actual drag/flip — NOT during fold_corner hover.
 function onChangeState(e) {
-  if (e.data === 'read') {
+  if (e.data === 'read' || e.data === 'fold_corner') {
     applyCoverClass();
   } else {
-    // Remove transform while dragging/animating so StPageFlip's
+    // 'flipping' or 'user_fold': remove transform so StPageFlip's
     // getBoundingClientRect coordinate mapping stays accurate.
     removeCoverClass();
   }

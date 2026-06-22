@@ -126,7 +126,10 @@ function applyPortraitAlign() {
 pageFlip.on('init',        () => { applyCoverClass(); setTimeout(applyPortraitAlign, 50); });
 pageFlip.on('flip',        applyCoverClass);
 pageFlip.on('changeState', onChangeState);
-window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign, 150); });
+window.addEventListener('resize', () => {
+  setVH();
+  setTimeout(() => { pageFlip.update(); applyPortraitAlign(); applyCoverClass(); }, 50);
+});
 
 // ── Zoom & pan (touch + desktop) ─────────────────────────────────────────────
 (function () {

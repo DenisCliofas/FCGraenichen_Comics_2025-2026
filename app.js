@@ -77,18 +77,29 @@ document.getElementById('book').addEventListener('mousemove', (e) => {
   if (e.buttons === 0) e.stopPropagation();
 }, true);
 
-function updateCoverClass() {
-  const book = document.getElementById('book');
-  // During a flip animation, the CSS transform on #book corrupts StPageFlip's
-  // getBoundingClientRect coordinate mapping. Remove it while flipping.
-  if (pageFlip.getState() !== 'read') {
-    book.classList.remove('is-cover', 'is-back-cover');
-    return;
-  }
+const _book = document.getElementById('book');
+
+function applyCoverClass() {
   const idx = pageFlip.getCurrentPageIndex();
   const last = pageFlip.getPageCount() - 1;
-  book.classList.toggle('is-cover', idx === 0);
-  book.classList.toggle('is-back-cover', idx === last);
+  _book.classList.toggle('is-cover',      idx === 0);
+  _book.classList.toggle('is-back-cover', idx === last);
+}
+
+function removeCoverClass() {
+  _book.classList.remove('is-cover', 'is-back-cover');
+}
+
+// changeState event fires BEFORE this.state is assigned in StPageFlip,
+// so getState() returns the OLD state. Use e.data (the new state) instead.
+function onChangeState(e) {
+  if (e.data === 'read') {
+    applyCoverClass();
+  } else {
+    // Remove transform while dragging/animating so StPageFlip's
+    // getBoundingClientRect coordinate mapping stays accurate.
+    removeCoverClass();
+  }
 }
 
 // Keep #book sized to the true visual viewport (window.innerHeight excludes browser chrome on Android)
@@ -112,9 +123,9 @@ function applyPortraitAlign() {
   canvas.style.marginTop = `-${r.top}px`;
 }
 
-pageFlip.on('init',        () => { updateCoverClass(); setTimeout(applyPortraitAlign, 50); });
-pageFlip.on('flip',        updateCoverClass);
-pageFlip.on('changeState', updateCoverClass); // remove transform during animation
+pageFlip.on('init',        () => { applyCoverClass(); setTimeout(applyPortraitAlign, 50); });
+pageFlip.on('flip',        applyCoverClass);
+pageFlip.on('changeState', onChangeState);
 window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign, 150); });
 
 // ── Zoom & pan (touch + desktop) ─────────────────────────────────────────────

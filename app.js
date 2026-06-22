@@ -67,6 +67,7 @@ pageFlip.loadFromImages([
   'content/Page24.png',
   'content/Page25.png',
   'content/Page26.png',
+  'content/Page27.png',
   'content/Page28.png',
   'content/PageSpacer.png',
   'content/BackCover.png',
@@ -143,7 +144,7 @@ window.addEventListener('resize', () => { setVH(); setTimeout(applyPortraitAlign
     'content/Page15.png','content/Page16.png','content/Page17.png',
     'content/Page18.png','content/Page19.png','content/Page22.png',
     'content/Page23.png','content/Page24.png','content/Page25.png',
-    'content/Page26.png','content/Page28.png',
+    'content/Page26.png','content/Page27.png','content/Page28.png',
     'content/PageSpacer.png','content/BackCover.png',
   ];
 
